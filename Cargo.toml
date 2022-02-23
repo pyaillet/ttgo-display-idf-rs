@@ -32,12 +32,15 @@ esp-idf-hal = "0.32.10"
 embedded-hal = "=1.0.0-alpha.6"
 embedded-hal-0-2 = { package = "embedded-hal", version = "0.2", features = ["unproven"] }
 embedded-graphics = { version = "0.7" }
+embedded-graphics-framebuf = "0.0.2"
 display-interface-spi = { version = "0.4" }
 
 # drivers
 #st7789 = { version = "^0.6" }
 #st7789 = { git = "https://github.com/almindor/st7789.git" }
-st7789 = { path = "../st7789", features = ["std"] }
+#st7789 = { path = "../st7789" }
+mipidsi = "0.1.0"
+
 
 [build-dependencies]
 embuild = "0.28"
