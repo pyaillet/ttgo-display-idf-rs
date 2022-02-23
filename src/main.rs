@@ -44,7 +44,7 @@ fn main() {
     .unwrap();
     let di = SPIInterfaceNoCS::new(spi, dc);
 
-    let mut display = st7789::ST7789::new(di, Some(rst), Some(bl), 135, 240);
+    let mut display = st7789::ST7789::new(di, Some(rst), Some(bl), 240, 135);
 
     // initialize
     display.init(&mut delay::Ets).unwrap();
@@ -54,7 +54,7 @@ fn main() {
         .unwrap();
 
     let raw_image_data = ImageRawLE::new(include_bytes!("../assets/ferris.raw"), 86);
-    let ferris = Image::new(&raw_image_data, Point::new(34, 8));
+    let ferris = Image::new(&raw_image_data, Point::new(50, 50));
 
     // draw image on black background
     display.clear(Rgb565::BLACK).unwrap();

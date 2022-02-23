@@ -16,11 +16,11 @@ release: ## Make sure we can release this.
 
 .PHONY: flash-debug
 flash-debug: debug ## Flash the debug firmware.
-	espflash $(DEVICE) target/xtensa-esp32-espidf/debug/twatch-idf-rs
+	espflash $(DEVICE) target/xtensa-esp32-espidf/debug/ttgo-display-idf-rs
 
 .PHONY: flash
 flash: release ## Flash the release firmware.
-	espflash $(DEVICE) target/xtensa-esp32-espidf/release/twatch-idf-rs
+	espflash $(DEVICE) target/xtensa-esp32-espidf/release/ttgo-display-idf-rs
 
 .PHONY: monitor
 monitor: flash-debug ## Monitor the device (default).
