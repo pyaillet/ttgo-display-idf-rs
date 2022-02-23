@@ -39,7 +39,8 @@ display-interface-spi = { version = "0.4" }
 #st7789 = { version = "^0.6" }
 #st7789 = { git = "https://github.com/almindor/st7789.git" }
 #st7789 = { path = "../st7789" }
-mipidsi = "0.1.0"
+# mipidsi = "0.1.0"
+mipidsi = { path = "../mipidsi" }
 
 
 [build-dependencies]

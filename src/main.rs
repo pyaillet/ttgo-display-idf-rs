@@ -76,10 +76,10 @@ fn main() {
     let mut x = 100.0;
     let mut dx = 1.0;
 
-    let min_x = 40; // RED
-    let max_x = 279; // YELLOW
-    let min_y = 53; // GREEN
-    let max_y = 187; // BLUE
+    let min_x = 0; //40; // RED
+    let max_x = 239; //279; // YELLOW
+    let min_y = 0; //53; // GREEN
+    let max_y = 134; //187; // BLUE
 
     log::info!("Border drawn on FB");
 
@@ -97,43 +97,35 @@ fn main() {
 
         Line::new(Point::new(min_x, min_y), Point::new(min_x, max_y))
             .into_styled(PrimitiveStyle::with_stroke(Rgb565::RED, 1))
-            .draw(&mut display)
+            .draw(fbuff)
             .unwrap();
         Line::new(Point::new(min_x, max_y), Point::new(max_x, max_y))
             .into_styled(PrimitiveStyle::with_stroke(Rgb565::BLUE, 1))
-            .draw(&mut display)
+            .draw(fbuff)
             .unwrap();
         Line::new(Point::new(max_x, max_y), Point::new(max_x, min_y))
             .into_styled(PrimitiveStyle::with_stroke(Rgb565::YELLOW, 1))
-            .draw(&mut display)
+            .draw(fbuff)
             .unwrap();
         Line::new(Point::new(max_x, min_y), Point::new(min_x, min_y))
             .into_styled(PrimitiveStyle::with_stroke(Rgb565::GREEN, 1))
-            .draw(&mut display)
+            .draw(fbuff)
             .unwrap();
 
         // triangle to be shown "in the scroll zone"
         let triangle = Triangle::new(Point::new(x0, y0), Point::new(x1, y1), Point::new(x2, y2))
             .into_styled(PrimitiveStyle::with_fill(Rgb565::GREEN));
-        // triangle.draw(fbuff).unwrap();
-        triangle.draw(&mut display).unwrap();
+        triangle.draw(fbuff).unwrap();
         // log::info!("Triangle drawn on FB");
 
-        /*display
-            .set_pixels(
-                min_x as u16,
-                min_y as u16,
-                max_x as u16,
-                max_y as u16,
-                fbuff.into_iter(),
-            )
+        display
+            .set_pixels(40, 53, 240 - 1 + 40, 53 + 135, fbuff.into_iter())
             .unwrap();
-        */
 
-        thread::sleep(Duration::from_millis(200));
+        thread::sleep(Duration::from_millis(20));
         // log::info!("FB sent to display");
-        // fbuff.clear_black();
-        display.clear(Rgb565::BLACK).unwrap();
+        fbuff.clear_black();
+        // display.clear(Rgb565::BLACK).unwrap();
         // log::info!("FB cleared");
 
         if y > 134.0 - radius {
