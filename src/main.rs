@@ -1,7 +1,9 @@
-#![feature(int_abs_diff)]
-
 use anyhow::Result;
+use embedded_graphics_framebuf::AsBytes;
 use embedded_hal_0_2::digital::v2::OutputPin;
+use embedded_svc::sys_time::SystemTime;
+use mipidsi::ColorOrder;
+use mipidsi::DisplayOptions;
 
 use std::{f64::consts, thread, time::Duration};
 
@@ -12,12 +14,20 @@ use embedded_graphics::prelude::*;
 use embedded_graphics::primitives::*;
 use embedded_graphics_framebuf::FrameBuf;
 
-use esp_idf_hal::{delay, gpio, peripherals, prelude::*, spi};
+use esp_idf_hal::{
+    delay, gpio, peripherals,
+    prelude::*,
+    spi::{self, config::DeviceFlag},
+};
 
 use mipidsi::{Display, Orientation};
 
+const TRANSFER_SIZE: usize = 32400;
+
 fn main() {
     init_esp().expect("Error initializing ESP");
+
+    let timer = esp_idf_svc::timer::EspTimerService::new().unwrap();
 
     let mut delay = delay::Ets;
 
@@ -31,12 +41,16 @@ fn main() {
     let mut bl = peripherals.pins.gpio4.into_output().unwrap();
 
     let config = <spi::config::Config as Default>::default()
-        .baudrate(26.MHz().into())
+        //.baudrate(53.MHz().into())
+        .baudrate(80.MHz().into())
+        .device_flags(DeviceFlag::NoDummy as u32)
+        .dma_channel(2)
+        .max_transfer_size(TRANSFER_SIZE as i32)
         // .bit_order(embedded_hal::spi::BitOrder::MSBFirst)
         .data_mode(embedded_hal::spi::MODE_0);
 
-    let spi = spi::Master::<spi::SPI2, _, _, _, _>::new(
-        peripherals.spi2,
+    let spi = spi::Master::<spi::SPI3, _, _, _, _>::new(
+        peripherals.spi3,
         spi::Pins {
             sclk,
             sdo: mosi,
@@ -50,10 +64,16 @@ fn main() {
 
     let mut display = Display::st7789(di, rst);
 
+    let mut options = DisplayOptions::default();
+    options.color_order = ColorOrder::Bgr;
+
     // initialize
-    display.init(&mut delay).unwrap();
+    display.init(&mut delay, options).unwrap();
     // set default orientation
-    display.set_orientation(Orientation::Landscape).unwrap();
+    display
+        .set_orientation(Orientation::Landscape(false))
+        .unwrap();
+    // display.set_inversion(false).unwrap();
     display.set_scroll_offset(0).unwrap();
 
     display.clear(Rgb565::BLACK).unwrap();
@@ -61,8 +81,8 @@ fn main() {
 
     log::info!("ST7789 initialized");
 
-    static mut FBUFF: FrameBuf<Rgb565, 240_usize, 135_usize> =
-        FrameBuf([[Rgb565::BLACK; 240]; 135]);
+    static mut FBUFF: FrameBuf<Rgb565, 240_usize, 135_usize, 32_400_usize> =
+        FrameBuf([Rgb565::BLACK; 32_400_usize]);
     let fbuff = unsafe { &mut FBUFF };
 
     fbuff.clear_black();
@@ -82,6 +102,11 @@ fn main() {
     let max_y = 134; //187; // BLUE
 
     log::info!("Border drawn on FB");
+
+    let mut increment: u16 = 1u16;
+    let mut color: u16 = 0u16;
+
+    log::info!("Ready to go !");
 
     loop {
         let angle0 = (i as f64).to_radians();
@@ -112,20 +137,49 @@ fn main() {
             .draw(fbuff)
             .unwrap();
 
+        let (r, g, b): (u8, u8, u8) = (
+            (((color >> 11) & 0b11111) as u8),
+            (((color >> 6) & 0b111111) as u8),
+            ((color & 0b11111) as u8),
+        );
+
         // triangle to be shown "in the scroll zone"
         let triangle = Triangle::new(Point::new(x0, y0), Point::new(x1, y1), Point::new(x2, y2))
-            .into_styled(PrimitiveStyle::with_fill(Rgb565::GREEN));
+            .into_styled(PrimitiveStyle::with_fill(Rgb565::new(r, g, b)));
         triangle.draw(fbuff).unwrap();
+        // fbuff.clear(Rgb565::BLUE).unwrap();
         // log::info!("Triangle drawn on FB");
 
+        let start = timer.now();
+        /*
         display
             .set_pixels(40, 53, 240 - 1 + 40, 53 + 135, fbuff.into_iter())
             .unwrap();
+            */
 
-        thread::sleep(Duration::from_millis(20));
+        display
+            .write_raw(
+                40,
+                53,
+                240 - 1 + 40,
+                53 - 1 + 135,
+                TRANSFER_SIZE,
+                fbuff.as_bytes(),
+            )
+            .unwrap();
+        let end = timer.now();
+
+        log::info!(
+            "Time drawing - start: {:?} - end: {:?} - total: {:?}",
+            start,
+            end,
+            end - start
+        );
+
+        thread::sleep(Duration::from_millis(10));
         // log::info!("FB sent to display");
         fbuff.clear_black();
-        // display.clear(Rgb565::BLACK).unwrap();
+        // display.write_raw(40, 53, 240 - 1 + 40, 53 + 135, fbuff.as_bytes()).unwrap();
         // log::info!("FB cleared");
 
         if y > 134.0 - radius {
@@ -140,7 +194,13 @@ fn main() {
         }
         x = x + dx;
         y = y + dy;
-        i = (i + 1) % 360
+        i = (i + 1) % 360;
+        color = (color << 1) | increment;
+        if color == u16::max_value() {
+            increment = 0;
+        } else if color == 0 {
+            increment = 1;
+        }
     }
 }
 
@@ -168,3 +228,4 @@ fn init_esp() -> Result<()> {
 
     Ok(())
 }
+
