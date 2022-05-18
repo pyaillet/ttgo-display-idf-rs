@@ -1,7 +1,7 @@
 #![feature(int_abs_diff)]
 
 use anyhow::Result;
-use embedded_hal_0_2::digital::v2::OutputPin;
+use embedded_hal_0_2::{blocking::delay::DelayUs,digital::v2::OutputPin};
 
 use std::{f64::consts, thread, time::Duration};
 
@@ -19,7 +19,9 @@ use mipidsi::{Display, Orientation};
 fn main() {
     init_esp().expect("Error initializing ESP");
 
-    let mut delay = delay::Ets;
+    let mut delay = delay::Ets {};
+
+    delay.delay_us(100_u32);
 
     let peripherals = peripherals::Peripherals::take().expect("Failed to take esp peripherals");
 
@@ -31,7 +33,8 @@ fn main() {
     let mut bl = peripherals.pins.gpio4.into_output().unwrap();
 
     let config = <spi::config::Config as Default>::default()
-        .baudrate(26.MHz().into())
+        .baudrate(80.MHz().into())
+        .write_only(true)
         // .bit_order(embedded_hal::spi::BitOrder::MSBFirst)
         .data_mode(embedded_hal::spi::MODE_0);
 
@@ -51,9 +54,11 @@ fn main() {
     let mut display = Display::st7789(di, rst);
 
     // initialize
-    display.init(&mut delay).unwrap();
+    display.init(&mut delay, Default::default()).unwrap();
     // set default orientation
-    display.set_orientation(Orientation::Landscape).unwrap();
+    display
+        .set_orientation(Orientation::Landscape(true))
+        .unwrap();
     display.set_scroll_offset(0).unwrap();
 
     display.clear(Rgb565::BLACK).unwrap();
@@ -116,17 +121,13 @@ fn main() {
         let triangle = Triangle::new(Point::new(x0, y0), Point::new(x1, y1), Point::new(x2, y2))
             .into_styled(PrimitiveStyle::with_fill(Rgb565::GREEN));
         triangle.draw(fbuff).unwrap();
-        // log::info!("Triangle drawn on FB");
 
         display
             .set_pixels(40, 53, 240 - 1 + 40, 53 + 135, fbuff.into_iter())
             .unwrap();
 
         thread::sleep(Duration::from_millis(20));
-        // log::info!("FB sent to display");
         fbuff.clear_black();
-        // display.clear(Rgb565::BLACK).unwrap();
-        // log::info!("FB cleared");
 
         if y > 134.0 - radius {
             dy = -1.0;
@@ -149,22 +150,6 @@ fn init_esp() -> Result<()> {
 
     // Bind the log crate to the ESP Logging facilities
     esp_idf_svc::log::EspLogger::initialize_default();
-
-    /*
-        use esp_idf_svc::{netif::EspNetifStack, nvs::EspDefaultNvs, sysloop::EspSysLoopStack};
-        use std::sync::Arc;
-
-        #[allow(unused)]
-        let netif_stack = Arc::new(EspNetifStack::new()?);
-        #[allow(unused)]
-        let sys_loop_stack = Arc::new(EspSysLoopStack::new()?);
-        #[allow(unused)]
-        let default_nvs = Arc::new(EspDefaultNvs::new()?);
-    */
-
-    /*
-    unsafe { esp_idf_sys::gpio_install_isr_service(0) };
-    */
 
     Ok(())
 }
