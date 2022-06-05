@@ -1,5 +1,3 @@
-#![feature(int_abs_diff)]
-
 use anyhow::Result;
 use embedded_hal_0_2::{blocking::delay::DelayUs,digital::v2::OutputPin};
 
@@ -10,11 +8,14 @@ use display_interface_spi::SPIInterfaceNoCS;
 use embedded_graphics::pixelcolor::Rgb565;
 use embedded_graphics::prelude::*;
 use embedded_graphics::primitives::*;
-use embedded_graphics_framebuf::FrameBuf;
+use embedded_graphics_framebuf::{AsWords, FrameBuf};
 
 use esp_idf_hal::{delay, gpio, peripherals, prelude::*, spi};
 
 use mipidsi::{Display, Orientation};
+
+const X: usize = 240;
+const Y: usize = 135;
 
 fn main() {
     init_esp().expect("Error initializing ESP");
@@ -35,6 +36,7 @@ fn main() {
     let config = <spi::config::Config as Default>::default()
         .baudrate(80.MHz().into())
         .write_only(true)
+        .dma(spi::Dma::Channel2(4096))
         // .bit_order(embedded_hal::spi::BitOrder::MSBFirst)
         .data_mode(embedded_hal::spi::MODE_0);
 
@@ -66,8 +68,8 @@ fn main() {
 
     log::info!("ST7789 initialized");
 
-    static mut FBUFF: FrameBuf<Rgb565, 240_usize, 135_usize> =
-        FrameBuf([[Rgb565::BLACK; 240]; 135]);
+    static mut FBUFF: FrameBuf<Rgb565, X, Y, { X * Y }> =
+        FrameBuf([Rgb565::BLACK; { X * Y } ]);
     let fbuff = unsafe { &mut FBUFF };
 
     fbuff.clear_black();
@@ -82,11 +84,15 @@ fn main() {
     let mut dx = 1.0;
 
     let min_x = 0; //40; // RED
-    let max_x = 239; //279; // YELLOW
+    let max_x = (X - 1) as i32; //279; // YELLOW
     let min_y = 0; //53; // GREEN
-    let max_y = 134; //187; // BLUE
+    let max_y = (Y - 1) as i32; //187; // BLUE
 
     log::info!("Border drawn on FB");
+
+    display.set_scroll_region(40, X as u16, 39).unwrap();
+
+    let mut scroll_offset = 0_u16;
 
     loop {
         let angle0 = (i as f64).to_radians();
@@ -122,26 +128,34 @@ fn main() {
             .into_styled(PrimitiveStyle::with_fill(Rgb565::GREEN));
         triangle.draw(fbuff).unwrap();
 
+        /*
         display
             .set_pixels(40, 53, 240 - 1 + 40, 53 + 135, fbuff.into_iter())
+            .unwrap();
+        */
+
+        display.set_scroll_offset(scroll_offset).unwrap();
+        display
+            .write_raw(40, 53, 240 - 1 + 40, 53 + 135, fbuff.as_words())
             .unwrap();
 
         thread::sleep(Duration::from_millis(20));
         fbuff.clear_black();
 
-        if y > 134.0 - radius {
+        if y > max_y as f64 - radius {
             dy = -1.0;
         } else if y < 0.0 as f64 + radius {
             dy = 1.0;
         }
-        if x > 239.0 as f64 - radius {
+        if x > max_x as f64 - radius {
             dx = -1.0;
         } else if x < 0.0 as f64 + radius {
             dx = 1.0;
         }
         x = x + dx;
         y = y + dy;
-        i = (i + 1) % 360
+        i = (i + 1) % 360;
+        scroll_offset = (scroll_offset + 1) % X as u16;
     }
 }
 

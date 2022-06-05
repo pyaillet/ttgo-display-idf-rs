@@ -22,23 +22,28 @@ anyhow = {version = "1", features = ["backtrace"]}
 mutex-trait = { version = "0.2" }
 bitmask-enum = { version = "1.1" }
 log = "0.4"
+byte-slice-cast = "1.2.1"
 
 # platform
 esp-idf-sys = { version = "0.31", features = ["binstart", "std"] }
 esp-idf-svc = "0.41.2"
 #esp-idf-hal = "0.37.3"
-esp-idf-hal = { version = "0.37", git = "https://github.com/esp-rs/esp-idf-hal.git", rev = "4be35d7" }
+#esp-idf-hal = { version = "0.37", git = "https://github.com/pyaillet/esp-idf-hal.git", rev = "a9a024d" }
+esp-idf-hal = { version = "0.37", git = "https://github.com/esp-rs/esp-idf-hal.git", rev = "2c3741a" }
 
 # hal
 embedded-hal = "=1.0.0-alpha.8"
 embedded-hal-0-2 = { package = "embedded-hal", version = "0.2", features = ["unproven"] }
+embedded-svc = "^0.21"
 embedded-graphics = { version = "0.7" }
-embedded-graphics-framebuf = "0.0.2"
+#embedded-graphics-framebuf = "0.0.2"
+embedded-graphics-framebuf = { git = "https://github.com/pyaillet/embedded-graphics-framebuf.git", rev = "62cc6e1" }
 display-interface-spi = { version = "0.4", git = "https://github.com/therealprof/display-interface.git", rev = "d61f3e7" }
 
 # drivers
-mipidsi = "^0.2"
+#mipidsi = "^0.2"
 #mipidsi = { path = "../mipidsi/" }
+mipidsi = { git = "https://github.com/pyaillet/mipidsi.git", branch = "add-write-raw" }
 
 
 [build-dependencies]
