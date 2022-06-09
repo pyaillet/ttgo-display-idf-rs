@@ -33,12 +33,14 @@
       "mutantdino.resourcemonitor",
       "yzhang.markdown-all-in-one",
       "webfreak.debug",
-      "actboy168.tasks"
+      "actboy168.tasks",
+      "ms-azuretools.vscode-docker"
     ],
     "forwardPorts": [
       9012,
       9333,
-      8000
+      8000,
+      8080
     ],
     "workspaceMount": "source=${localWorkspaceFolder},target=/home/esp/{{ crate_name }},type=bind,consistency=cached",
     "workspaceFolder": "/home/esp/{{ crate_name }}"
