@@ -28,8 +28,8 @@ esp-idf-sys = { version = "^0.31", features = ["binstart", "std", "native"] }
 #esp-idf-svc = "0.36.9"
 esp-idf-svc = { git = "https://github.com/esp-rs/esp-idf-svc.git", features = ["experimental"] }
 #esp-idf-hal = "^0.35"
-esp-idf-hal = { path = "../../esp-idf-hal/" }
 #esp-idf-hal = { path = "../../esp-idf-hal/" }
+esp-idf-hal = { git = "https://github.com/esp-rs/esp-idf-hal", rev = "2c3741a" }
 
 # hal
 embedded-hal = "=1.0.0-alpha.8"
@@ -38,15 +38,17 @@ embedded-graphics = { version = "0.7" }
 #embedded-graphics-framebuf = { "0.0.2" }
 #display-interface-spi = { version = "0.4" }
 embedded-graphics-framebuf = { path = "../embedded-graphics-framebuf/" }
+embedded-graphics-framebuf = { git = "https://github.com/pyaillet/embedded-graphics-framebuf", rev = "21f4d5e" }
 embedded-svc = { version = "^0.20" }
-display-interface-spi = { path = "../display-interface/spi/" }
+display-interface-spi = { version = "0.4.1" }
 
 # drivers
 #st7789 = { version = "^0.6" }
 #st7789 = { git = "https://github.com/almindor/st7789.git" }
 #st7789 = { path = "../st7789" }
 # mipidsi = "0.1.0"
-mipidsi = { path = "../mipidsi" }
+mipidsi = { git = "https://github.com/pyaillet/mipidsi.git", rev = "cf10fd3" }
+#mipidsi = { path = "../mipidsi" }
 
 
 [build-dependencies]
