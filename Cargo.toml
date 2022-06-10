@@ -37,8 +37,8 @@ embedded-hal-0-2 = { package = "embedded-hal", version = "0.2", features = ["unp
 embedded-graphics = { version = "0.7" }
 #embedded-graphics-framebuf = { "0.0.2" }
 #display-interface-spi = { version = "0.4" }
-embedded-graphics-framebuf = { path = "../embedded-graphics-framebuf/" }
-embedded-graphics-framebuf = { git = "https://github.com/pyaillet/embedded-graphics-framebuf", rev = "21f4d5e" }
+#embedded-graphics-framebuf = { path = "../embedded-graphics-framebuf/" }
+embedded-graphics-framebuf = { git = "https://github.com/pyaillet/embedded-graphics-framebuf", rev = "62cc6e1" }
 embedded-svc = { version = "^0.20" }
 display-interface-spi = { version = "0.4.1" }
 
