@@ -1,5 +1,4 @@
 use anyhow::Result;
-use embedded_graphics_framebuf::AsBytes;
 use embedded_hal_0_2::digital::v2::OutputPin;
 use embedded_svc::sys_time::SystemTime;
 use mipidsi::ColorOrder;
@@ -12,17 +11,15 @@ use display_interface_spi::SPIInterfaceNoCS;
 use embedded_graphics::pixelcolor::Rgb565;
 use embedded_graphics::prelude::*;
 use embedded_graphics::primitives::*;
-use embedded_graphics_framebuf::FrameBuf;
+use embedded_graphics_framebuf::{FrameBuf, AsWords};
 
 use esp_idf_hal::{
     delay, gpio, peripherals,
     prelude::*,
-    spi::{self, config::DeviceFlag},
+    spi,
 };
 
 use mipidsi::{Display, Orientation};
-
-const TRANSFER_SIZE: usize = 32400;
 
 fn main() {
     init_esp().expect("Error initializing ESP");
@@ -43,9 +40,8 @@ fn main() {
     let config = <spi::config::Config as Default>::default()
         //.baudrate(53.MHz().into())
         .baudrate(80.MHz().into())
-        .device_flags(DeviceFlag::NoDummy as u32)
-        .dma_channel(2)
-        .max_transfer_size(TRANSFER_SIZE as i32)
+        .write_only(true)
+        .dma(spi::Dma::Channel2(4096))
         // .bit_order(embedded_hal::spi::BitOrder::MSBFirst)
         .data_mode(embedded_hal::spi::MODE_0);
 
@@ -163,8 +159,7 @@ fn main() {
                 53,
                 240 - 1 + 40,
                 53 - 1 + 135,
-                TRANSFER_SIZE,
-                fbuff.as_bytes(),
+                fbuff.as_words(),
             )
             .unwrap();
         let end = timer.now();
