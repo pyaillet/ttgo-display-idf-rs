@@ -35,15 +35,17 @@ esp-idf-hal = { version = "0.37", git = "https://github.com/esp-rs/esp-idf-hal.g
 embedded-hal = "=1.0.0-alpha.8"
 embedded-hal-0-2 = { package = "embedded-hal", version = "0.2", features = ["unproven"] }
 embedded-svc = "^0.21"
-embedded-graphics = { version = "0.7" }
+#embedded-graphics = { version = "0.7" }
 #embedded-graphics-framebuf = "0.0.2"
-embedded-graphics-framebuf = { git = "https://github.com/pyaillet/embedded-graphics-framebuf.git", rev = "62cc6e1" }
-display-interface-spi = { version = "0.4", git = "https://github.com/therealprof/display-interface.git", rev = "d61f3e7" }
+#embedded-graphics-framebuf = { git = "https://github.com/pyaillet/embedded-graphics-framebuf.git", rev = "62cc6e1" }
+#display-interface-spi = { version = "0.4", git = "https://github.com/therealprof/display-interface.git", rev = "d61f3e7" }
 
 # drivers
 #mipidsi = "^0.2"
 #mipidsi = { path = "../mipidsi/" }
-mipidsi = { git = "https://github.com/pyaillet/mipidsi.git", branch = "add-write-raw" }
+#mipidsi = { git = "https://github.com/pyaillet/mipidsi.git", branch = "add-write-raw" }
+
+lazy_static = "1.2"
 
 
 [build-dependencies]
