@@ -22,7 +22,11 @@ RUN apt-get update \
 RUN git clone https://github.com/neovim/neovim.git \
     && cd neovim && make CMAKE_BUILD_TYPE=RelWithDebInfo \
     && make install && pip3 install pynvim \
-    && cd .. && rm -Rf neovim
+    && cd .. && rm -Rf neovim \
+    && curl -fsSL https://deb.nodesource.com/setup_current.x | bash - \
+    && curl -fsSL -o /tmp/go1.17.linux-amd64.tar.gz https://golang.org/dl/go1.17.linux-amd64.tar.gz \
+    && tar -zxvf /tmp/go1.17.linux-amd64.tar.gz -C /usr/local/ \
+    && echo "export PATH=/usr/local/go/bin:${PATH}" | tee /etc/profile.d/go.sh
 
 
 # Set users

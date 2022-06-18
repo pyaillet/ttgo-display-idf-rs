@@ -12,6 +12,7 @@
       }
     },
     "settings": {
+      "editor.fontFamily": "FiraCode Nerd Font Mono",
       "editor.formatOnPaste": true,
       "editor.formatOnSave": true,
       "editor.formatOnSaveMode": "modifications",
