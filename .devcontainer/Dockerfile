@@ -59,7 +59,9 @@ RUN curl -L https://github.com/MabezDev/wokwi-server/releases/latest/download/wo
     && rm /home/${CONTAINER_USER}/.cargo/bin/wokwi-server.zip
 RUN chmod u+x /home/${CONTAINER_USER}/.cargo/bin/wokwi-server
 RUN curl -fLo ~/.config/nvim/init.vim --create-dirs https://raw.githubusercontent.com/charlyx/vim-config/master/init.vim \
-    && curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    && curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim \
+    && mkdir -p ~/.cache/nvim \
+    && nvim +PlugInstall +TSUpdate +qall
 
 # Activate ESP environment
 RUN echo "source /home/${CONTAINER_USER}/export-esp.sh" >> ~/.bashrc \
