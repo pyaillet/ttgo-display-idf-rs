@@ -1,7 +1,7 @@
 {
     "name": "ttgo-display-idf-rs",
     // Select between image and build propieties to pull or build the image.
-    "image": "docker.io/espressif/idf-rust:esp32_v4.4_1.61.0.0",
+    //"image": "docker.io/espressif/idf-rust:esp32_v4.4_1.61.0.0",
     "build": {
       "dockerfile": "Dockerfile",
       "args": {
@@ -43,8 +43,7 @@
     "forwardPorts": [
       9012,
       9333,
-      8000,
-      8080
+      8000
     ],
     "workspaceMount": "source=${localWorkspaceFolder},target=/home/esp/{{ crate_name }},type=bind,consistency=cached",
     "workspaceFolder": "/home/esp/{{ crate_name }}"

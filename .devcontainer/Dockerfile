@@ -24,6 +24,8 @@ RUN git clone https://github.com/neovim/neovim.git \
     && make install && pip3 install pynvim \
     && cd .. && rm -Rf neovim \
     && curl -fsSL https://deb.nodesource.com/setup_current.x | bash - \
+    && apt-get update && apt-get install -y nodejs \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts \
     && curl -fsSL -o /tmp/go1.17.linux-amd64.tar.gz https://golang.org/dl/go1.17.linux-amd64.tar.gz \
     && tar -zxvf /tmp/go1.17.linux-amd64.tar.gz -C /usr/local/ \
     && echo "export PATH=/usr/local/go/bin:${PATH}" | tee /etc/profile.d/go.sh
