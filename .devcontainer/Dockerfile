@@ -14,9 +14,16 @@ ARG INSTALL_RUST_TOOLCHAIN=install-rust-toolchain.sh
 
 # Install dependencies
 RUN apt-get update \
-    && apt-get install -y git curl gcc clang ninja-build libudev-dev unzip xz-utils\
+    && apt-get install -y git curl gcc clang ninja-build libudev-dev unzip xz-utils \
     python3 python3-pip python3-venv libusb-1.0-0 libssl-dev pkg-config libtinfo5 libpython2.7 \
+    ninja-build gettext libtool libtool-bin autoconf automake cmake g++ doxygen ripgrep fzf \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts
+
+RUN git clone https://github.com/neovim/neovim.git \
+    && cd neovim && make CMAKE_BUILD_TYPE=RelWithDebInfo \
+    && make install && pip3 install pynvim \
+    && cd .. && rm -Rf neovim
+
 
 # Set users
 RUN adduser --disabled-password --gecos "" ${CONTAINER_USER}
@@ -51,8 +58,13 @@ RUN curl -L https://github.com/MabezDev/wokwi-server/releases/latest/download/wo
     -d /home/${CONTAINER_USER}/.cargo/bin/ \
     && rm /home/${CONTAINER_USER}/.cargo/bin/wokwi-server.zip
 RUN chmod u+x /home/${CONTAINER_USER}/.cargo/bin/wokwi-server
+RUN mkdir -p ~/.config/nvim \
+    && curl -L https://raw.githubusercontent.com/charlyx/vim-config/master/init.vim -o ~/.config/nvim/init.vim \
+    && nvim +PlugInstall +qall
 
 # Activate ESP environment
-RUN echo "source /home/${CONTAINER_USER}/export-esp.sh" >> ~/.bashrc
+RUN echo "source /home/${CONTAINER_USER}/export-esp.sh" >> ~/.bashrc \
+    && echo "alias vi=/usr/local/bin/nvim" >> ~/.bashrc \
+    && echo "alias vim=/usr/local/bin/nvim" >> ~/.bashrc
 
 CMD [ "/bin/bash" ]
