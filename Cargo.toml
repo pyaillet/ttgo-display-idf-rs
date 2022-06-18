@@ -45,6 +45,7 @@ display-interface-spi = { version = "0.4", git = "https://github.com/therealprof
 #mipidsi = { path = "../mipidsi/" }
 mipidsi = { git = "https://github.com/pyaillet/mipidsi.git", branch = "add-write-raw" }
 
+futures = "0.3"
 
 [build-dependencies]
 embuild = "0.28"
