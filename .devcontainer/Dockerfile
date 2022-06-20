@@ -14,7 +14,7 @@ ARG INSTALL_RUST_TOOLCHAIN=install-rust-toolchain.sh
 
 # Install dependencies
 RUN apt-get update \
-    && apt-get install -y git curl gcc clang ninja-build libudev-dev unzip xz-utils \
+    && apt-get install -y git curl gcc clang ninja-build libudev-dev unzip xz-utils tmux \
     python3 python3-pip python3-venv libusb-1.0-0 libssl-dev pkg-config libtinfo5 libpython2.7 \
     ninja-build gettext libtool libtool-bin autoconf automake cmake g++ doxygen ripgrep fzf socat \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts
