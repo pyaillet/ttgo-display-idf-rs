@@ -47,6 +47,10 @@ embedded-svc = "^0.21"
 
 lazy_static = "1.2"
 
+futures = "0.3"
+
+test-toto = { path = "../test-toto" }
+
 
 [build-dependencies]
 embuild = "0.28"

@@ -1,33 +1,35 @@
+use esp_idf_sys::*;
+
+pub trait GattApplication {
+    fn get_application_id(&self) -> u16;
+}
+
 #[derive(Copy, Clone)]
 pub enum GattServiceEvent {
-    Register(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_reg_evt_param),
-    Read(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_read_evt_param),
-    Write(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_write_evt_param),
-    ExecWrite(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_exec_write_evt_param),
-    Mtu(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_mtu_evt_param),
-    Confirm(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_conf_evt_param),
-    Unregister(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_create_evt_param),
-    Create(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_create_evt_param),
-    AddIncludedServiceComplete(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_add_incl_srvc_evt_param),
-    AddCharacteristicComplete(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_add_char_evt_param),
-    AddDescriptorComplete(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_add_char_descr_evt_param),
-    DeleteComplete(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_delete_evt_param),
-    StartComplete(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_start_evt_param),
-    StopComplete(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_stop_evt_param),
-    Connect(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_connect_evt_param),
-    Disconnect(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_disconnect_evt_param),
-    Open(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_open_evt_param),
-    Close(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_close_evt_param),
-    Listen(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_congest_evt_param),
-    Congest(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_congest_evt_param),
-    ResponseComplete(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_rsp_evt_param),
-    CreateAttributeTableComplete(
-        esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_add_attr_tab_evt_param,
-    ),
-    SetAttributeValueComplete(esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_set_attr_val_evt_param),
-    SendServiceChangeComplete(
-        esp_idf_sys::esp_ble_gatts_cb_param_t_gatts_send_service_change_evt_param,
-    ),
+    Register(esp_ble_gatts_cb_param_t_gatts_reg_evt_param),
+    Read(esp_ble_gatts_cb_param_t_gatts_read_evt_param),
+    Write(esp_ble_gatts_cb_param_t_gatts_write_evt_param),
+    ExecWrite(esp_ble_gatts_cb_param_t_gatts_exec_write_evt_param),
+    Mtu(esp_ble_gatts_cb_param_t_gatts_mtu_evt_param),
+    Confirm(esp_ble_gatts_cb_param_t_gatts_conf_evt_param),
+    Unregister(esp_ble_gatts_cb_param_t_gatts_create_evt_param),
+    Create(esp_ble_gatts_cb_param_t_gatts_create_evt_param),
+    AddIncludedServiceComplete(esp_ble_gatts_cb_param_t_gatts_add_incl_srvc_evt_param),
+    AddCharacteristicComplete(esp_ble_gatts_cb_param_t_gatts_add_char_evt_param),
+    AddDescriptorComplete(esp_ble_gatts_cb_param_t_gatts_add_char_descr_evt_param),
+    DeleteComplete(esp_ble_gatts_cb_param_t_gatts_delete_evt_param),
+    StartComplete(esp_ble_gatts_cb_param_t_gatts_start_evt_param),
+    StopComplete(esp_ble_gatts_cb_param_t_gatts_stop_evt_param),
+    Connect(esp_ble_gatts_cb_param_t_gatts_connect_evt_param),
+    Disconnect(esp_ble_gatts_cb_param_t_gatts_disconnect_evt_param),
+    Open(esp_ble_gatts_cb_param_t_gatts_open_evt_param),
+    Close(esp_ble_gatts_cb_param_t_gatts_close_evt_param),
+    Listen(esp_ble_gatts_cb_param_t_gatts_congest_evt_param),
+    Congest(esp_ble_gatts_cb_param_t_gatts_congest_evt_param),
+    ResponseComplete(esp_ble_gatts_cb_param_t_gatts_rsp_evt_param),
+    CreateAttributeTableComplete(esp_ble_gatts_cb_param_t_gatts_add_attr_tab_evt_param),
+    SetAttributeValueComplete(esp_ble_gatts_cb_param_t_gatts_set_attr_val_evt_param),
+    SendServiceChangeComplete(esp_ble_gatts_cb_param_t_gatts_send_service_change_evt_param),
 }
 
 impl std::fmt::Debug for GattServiceEvent {
@@ -38,8 +40,8 @@ impl std::fmt::Debug for GattServiceEvent {
                 "Register {{ status: {}, app_id: {} }}",
                 reg.status, reg.app_id
             ),
-            GattServiceEvent::Read(_read) => write!(f, "Read"),
-            GattServiceEvent::Write(_write) => write!(f, "Write"),
+            GattServiceEvent::Read(read) => write!(f, "Read {{ {:?} }}", read),
+            GattServiceEvent::Write(write) => write!(f, "Write {{ {:?} }}", write),
             GattServiceEvent::ExecWrite(_) => write!(f, "ExecWrite"),
             GattServiceEvent::Mtu(_) => write!(f, "Mtu"),
             GattServiceEvent::Confirm(_) => write!(f, "Confirm"),
